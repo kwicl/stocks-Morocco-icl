@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Activity, ArrowDownRight, ArrowUpRight, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -16,10 +16,12 @@ import { getMarketProvider } from '@/lib/market/provider';
 import { formatMAD, formatPct, formatSignedMAD, formatTime, formatVolume } from '@/lib/format';
 import { Sparkline } from '@/components/Sparkline';
 import { VariationBadge } from '@/components/VariationBadge';
+import { StockDetailSheet } from '@/sections/StockDetailSheet';
 import { cn } from '@/lib/utils';
 
 export function MarketWatch() {
   const { quotes, mode } = useQuotes();
+  const [detailSymbol, setDetailSymbol] = useState<string | null>(null);
 
   const stats = useMemo(() => {
     const list = Object.values(quotes);
@@ -111,7 +113,8 @@ export function MarketWatch() {
           <span className="text-xs text-muted-foreground">
             {provider.mode === 'simulated'
               ? 'Données simulées à titre de démonstration, basées sur les dernières clôtures publiées.'
-              : 'Cours diffusés par le flux de marché.'}
+              : 'Cours diffusés par le flux de marché.'}{' '}
+            Touchez une valeur pour ouvrir son graphique historique.
           </span>
         </CardHeader>
         <CardContent className="overflow-x-auto px-0 sm:px-6">
@@ -136,7 +139,11 @@ export function MarketWatch() {
                 if (!q) return null;
                 const positive = q.changePct >= 0;
                 return (
-                  <TableRow key={meta.symbol}>
+                  <TableRow
+                    key={meta.symbol}
+                    className="cursor-pointer"
+                    onClick={() => setDetailSymbol(meta.symbol)}
+                  >
                     <TableCell className="pl-4 sm:pl-0">
                       <div className="flex flex-col">
                         <span className="font-semibold">{meta.symbol}</span>
@@ -193,7 +200,11 @@ export function MarketWatch() {
           const q = quotes[meta.symbol];
           if (!q) return null;
           return (
-            <Card key={meta.symbol}>
+            <Card
+              key={meta.symbol}
+              className="cursor-pointer transition-colors hover:border-emerald-500/40"
+              onClick={() => setDetailSymbol(meta.symbol)}
+            >
               <CardHeader className="pb-2 pt-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-semibold">{meta.symbol}</CardTitle>
@@ -217,6 +228,14 @@ export function MarketWatch() {
           );
         })}
       </div>
+
+      <StockDetailSheet
+        symbol={detailSymbol}
+        open={detailSymbol !== null}
+        onOpenChange={(open) => {
+          if (!open) setDetailSymbol(null);
+        }}
+      />
     </div>
   );
 }
