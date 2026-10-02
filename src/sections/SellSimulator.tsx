@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calculator, Settings2 } from 'lucide-react';
+import { Calculator, Settings2, X } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -266,6 +266,17 @@ export function SellSimulator({ position, quotes, open, onOpenChange }: SellSimu
               Saisissez une quantité à vendre pour lancer la simulation.
             </p>
           )}
+
+          {/* Bouton de fermeture proéminent (mobile) */}
+          <Button
+            variant="secondary"
+            size="lg"
+            className="safe-bottom sticky bottom-2 w-full shadow-lg"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="mr-1.5 h-4 w-4" />
+            Fermer
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

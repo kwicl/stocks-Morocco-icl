@@ -67,53 +67,59 @@ export function PortfolioView() {
 
   return (
     <div className="space-y-4">
-      {/* Synthèse */}
+      {/* Synthèse — indicateurs principaux à lueur multicolore */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Valeur actuelle du portefeuille
-            </CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pb-4">
-            <span className="text-2xl font-bold tabular-nums">{formatMAD(totals.value)}</span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Coût d'acquisition total
-            </CardTitle>
-            <PiggyBank className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pb-4">
-            <span className="text-2xl font-bold tabular-nums">{formatMAD(totals.cost)}</span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Plus/Moins-value latente
-            </CardTitle>
-            <Scale className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pb-4">
-            <span
-              className={cn(
-                'text-2xl font-bold tabular-nums',
-                totals.pnl >= 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-red-600 dark:text-red-400',
-              )}
-            >
-              {formatSignedMAD(totals.pnl)}
-            </span>
-            <span className="ml-2 text-sm text-muted-foreground tabular-nums">
-              ({formatPct(totalsPct)})
-            </span>
-          </CardContent>
-        </Card>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Valeur actuelle du portefeuille
+              </CardTitle>
+              <Wallet className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <span className="text-2xl font-bold tabular-nums">{formatMAD(totals.value)}</span>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Coût d'acquisition total
+              </CardTitle>
+              <PiggyBank className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <span className="text-2xl font-bold tabular-nums">{formatMAD(totals.cost)}</span>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Plus/Moins-value latente
+              </CardTitle>
+              <Scale className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <span
+                className={cn(
+                  'text-2xl font-bold tabular-nums',
+                  totals.pnl >= 0
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-red-600 dark:text-red-400',
+                )}
+              >
+                {formatSignedMAD(totals.pnl)}
+              </span>
+              <span className="ml-2 text-sm text-muted-foreground tabular-nums">
+                ({formatPct(totalsPct)})
+              </span>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Table des positions */}

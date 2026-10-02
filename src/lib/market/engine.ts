@@ -1,5 +1,6 @@
 import type { MarketDataProvider, QuoteMap } from './types';
 import { STOCK_UNIVERSE, MASI_REFERENCE } from './universe';
+import { isBvcOpen } from './hours';
 
 const TICK_MS = 2500;
 const INTRADAY_POINTS = 120;
@@ -95,6 +96,8 @@ export class SimulatedMarketProvider implements MarketDataProvider {
   }
 
   private tick(): void {
+    // Hors séance (soir, nuit, week-end) : les cours restent figés à la clôture
+    if (!isBvcOpen()) return;
     const now = Date.now();
     for (const meta of STOCK_UNIVERSE) {
       const q = this.quotes[meta.symbol];

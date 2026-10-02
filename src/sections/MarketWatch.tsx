@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Activity, ArrowDownRight, ArrowUpRight, Clock } from 'lucide-react';
+import { Activity, ArrowDownRight, ArrowUpRight, Clock, DoorOpen, DoorClosed } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -11,16 +11,19 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useQuotes } from '@/hooks/useQuotes';
+import { useMarketOpen } from '@/hooks/useMarketOpen';
 import { STOCK_UNIVERSE, MASI_REFERENCE } from '@/lib/market/universe';
 import { getMarketProvider } from '@/lib/market/provider';
 import { formatMAD, formatPct, formatSignedMAD, formatTime, formatVolume } from '@/lib/format';
 import { Sparkline } from '@/components/Sparkline';
 import { VariationBadge } from '@/components/VariationBadge';
+import { PortfolioStrip } from '@/components/PortfolioStrip';
 import { StockDetailSheet } from '@/sections/StockDetailSheet';
 import { cn } from '@/lib/utils';
 
 export function MarketWatch() {
   const { quotes, mode } = useQuotes();
+  const marketOpen = useMarketOpen();
   const [detailSymbol, setDetailSymbol] = useState<string | null>(null);
 
   const stats = useMemo(() => {
@@ -38,72 +41,99 @@ export function MarketWatch() {
 
   return (
     <div className="space-y-4">
-      {/* Bandeau synthèse marché */}
+      {/* Bandeau portefeuille : valeur actuelle, acquisition, gain/perte */}
+      <PortfolioStrip />
+
+      {/* Bandeau synthèse marché — indicateurs principaux à lueur multicolore */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Indice MASI (indicatif)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold tabular-nums">
-                {stats.masi.toLocaleString('fr-MA', { maximumFractionDigits: 0 })}
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Indice MASI (indicatif)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl font-bold tabular-nums">
+                  {stats.masi.toLocaleString('fr-MA', { maximumFractionDigits: 0 })}
+                </span>
+                <VariationBadge changePct={Number(stats.masiPct.toFixed(2))} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Hausses / Baisses
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center gap-3 pb-4">
+              <span className="inline-flex items-center gap-1 text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                <ArrowUpRight className="h-4 w-4" />
+                {stats.up}
               </span>
-              <VariationBadge changePct={Number(stats.masiPct.toFixed(2))} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Hausses / Baisses
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center gap-3 pb-4">
-            <span className="inline-flex items-center gap-1 text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              <ArrowUpRight className="h-4 w-4" />
-              {stats.up}
-            </span>
-            <span className="inline-flex items-center gap-1 text-lg font-bold text-red-600 dark:text-red-400">
-              <ArrowDownRight className="h-4 w-4" />
-              {stats.down}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Dernière mise à jour
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <span className="inline-flex items-center gap-1.5 text-lg font-bold tabular-nums">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              {stats.lastUpdate ? formatTime(new Date(stats.lastUpdate)) : '—'}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">Flux de données</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <Badge
-              variant="outline"
-              className={cn(
-                'gap-1.5',
-                mode === 'simulated'
-                  ? 'border-amber-500/50 text-amber-600 dark:text-amber-400'
-                  : 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400',
-              )}
-            >
-              <Activity className="h-3 w-3 animate-pulse" />
-              {mode === 'simulated' ? 'Flux simulé (démo)' : 'Flux temps réel'}
-            </Badge>
-          </CardContent>
-        </Card>
+              <span className="inline-flex items-center gap-1 text-lg font-bold text-red-600 dark:text-red-400">
+                <ArrowDownRight className="h-4 w-4" />
+                {stats.down}
+              </span>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
+                Dernière mise à jour
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-4">
+              <span className="inline-flex items-center gap-1.5 text-lg font-bold tabular-nums">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                {stats.lastUpdate ? formatTime(new Date(stats.lastUpdate)) : '—'}
+              </span>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="glow-wrap">
+          <Card>
+            <CardHeader className="pb-1 pt-4">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Séance & flux</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-1.5 pb-4">
+              <Badge
+                variant="outline"
+                className={cn(
+                  'w-fit gap-1.5',
+                  marketOpen
+                    ? 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400'
+                    : 'border-muted-foreground/40 text-muted-foreground',
+                )}
+              >
+                {marketOpen ? (
+                  <DoorOpen className="h-3 w-3" />
+                ) : (
+                  <DoorClosed className="h-3 w-3" />
+                )}
+                {marketOpen ? 'Marché ouvert' : 'Marché fermé'}
+              </Badge>
+              <Badge
+                variant="outline"
+                className={cn(
+                  'w-fit gap-1.5',
+                  mode === 'simulated'
+                    ? 'border-amber-500/50 text-amber-600 dark:text-amber-400'
+                    : 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400',
+                )}
+              >
+                <Activity className={cn('h-3 w-3', marketOpen && 'animate-pulse')} />
+                {mode === 'simulated' ? 'Flux simulé (démo)' : 'Flux temps réel'}
+              </Badge>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Tableau des cours */}
@@ -214,7 +244,9 @@ export function MarketWatch() {
               </CardHeader>
               <CardContent className="space-y-2 pb-4">
                 <div className="text-2xl font-bold tabular-nums">{formatMAD(q.last)}</div>
-                <Sparkline data={q.intraday} positive={q.changePct >= 0} width={220} height={40} />
+                <div className="flex w-full justify-center">
+                  <Sparkline data={q.intraday} positive={q.changePct >= 0} height={40} fluid />
+                </div>
                 <div className="grid grid-cols-2 gap-x-2 text-xs text-muted-foreground">
                   <span>Secteur</span>
                   <span className="truncate text-right text-foreground">{meta.sector}</span>

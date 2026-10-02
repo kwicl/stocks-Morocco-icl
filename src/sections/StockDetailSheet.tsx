@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { X } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -6,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import { PriceChart } from '@/components/PriceChart';
 import { VariationBadge } from '@/components/VariationBadge';
 import { useQuotes } from '@/hooks/useQuotes';
@@ -72,6 +74,17 @@ export function StockDetailSheet({ symbol, open, onOpenChange }: StockDetailShee
             Historique simulé calé sur la dernière clôture publiée (démonstration). Glissez le
             doigt ou le curseur sur le graphique pour lire la valeur à chaque date.
           </p>
+
+          {/* Bouton de fermeture proéminent (mobile) */}
+          <Button
+            variant="secondary"
+            size="lg"
+            className="safe-bottom sticky bottom-2 w-full shadow-lg"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="mr-1.5 h-4 w-4" />
+            Fermer
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

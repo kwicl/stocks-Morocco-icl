@@ -95,3 +95,52 @@
     font-size: 0.8125rem;
   }
 }
+
+/* ── Lueur multicolore (style Gemini) autour des indicateurs clés ───── */
+.glow-wrap {
+  position: relative;
+  border-radius: calc(var(--radius) + 3px);
+  padding: 1.5px;
+  background: linear-gradient(
+    120deg,
+    #4285f4,
+    #9b72cb,
+    #d96570,
+    #f59e0b,
+    #10b981,
+    #06b6d4,
+    #4285f4
+  );
+  background-size: 300% 300%;
+  animation: glow-flow 9s ease infinite;
+}
+.glow-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  background-size: 300% 300%;
+  animation: inherit;
+  filter: blur(14px);
+  opacity: 0.35;
+  z-index: -1;
+}
+.dark .glow-wrap::before {
+  opacity: 0.5;
+}
+.glow-wrap > * {
+  border-radius: calc(var(--radius) + 1.5px);
+  border: 0 !important;
+  height: 100%;
+}
+
+@keyframes glow-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
